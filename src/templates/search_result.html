@@ -1,0 +1,50 @@
+{% extends 'base.html'%}
+{% load static %}  
+
+
+
+{% block content %}
+
+ 
+<div class="container-fluid py-5">
+   <div class="row">
+     
+    <div class="alert alert-light mb-3" role="alert">
+         <u><h4 class="alert-heading">This is the results of your search ...</h4></u><hr>
+      
+     
+
+      {% for obj in search %}
+      <div class="post col-xl-4">
+         <div class="post-thumbnail"><a href="obj.get_absolute_url"><img src="{{obj.thumbnails.url}}" alt="..."
+                  class="img-fluid"></a></div>
+         <div class="post-details">
+            <div class="post-meta d-flex justify-content-between">
+               <div class="date meta-last">{{obj.timestamb|timesince}}</div>
+               {% for cat in category %}
+               <div class="category">
+                  <a href="#">{{cat}}</a>
+               </div>
+
+               {% endfor %}
+            </div><a href="obj.get_absolute_url">
+               <h3 class="h4 text-info">{{obj.title}}</h3>
+            </a>
+            <div class="text-muted"><p>{{obj.overview }}</p></div>
+            <footer class="post-footer d-flex align-items-center"><a href="#"
+                  class="author d-flex align-items-center flex-wrap">
+                  <div class="avatar"><img src="{{obj.author.profile_picture.url}}" alt="..." class="img-fluid"></div>
+                  <div class="title"><span>{{obj.author}}</span></div>
+               </a>
+               <div class="date"><i class="icon-clock"></i> {{obj.timestamb|timesince}}</div>
+               <div class="comments meta-last"><i class="icon-comment"></i>{{obj.comment}}</div>
+            </footer>
+         </div>
+      </div>
+      {% endfor %} <hr>
+    </div>
+      
+   </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,178 @@
+{% extends 'base.html'%}
+{%load static %}
+{% block content %}
+
+  <body>
+    
+    <div class="container">
+      <div class="row">
+        <!-- Latest Posts -->
+        <main class="post blog-post col-lg-8"> 
+          <div class="container">
+            <div class="post-single">
+              <div class="post-thumbnail"><img src="{{post.thumbnails.url}}" alt="..." class="img-fluid"></div>
+              <div class="post-details">
+                <div class="post-meta d-flex justify-content-between">
+                  <div class="category">
+                    {% for cat in post.category.all %}
+                    <a href="#">{{cat}}</a>
+                    {% endfor %}
+                  </div>
+                  <div>
+                    <a class="text-bold text-info" href="{% url 'post-update' id=post.id %}"> UPDATE</a> |
+                    <a class="text-bold text-danger" href="{% url 'post-delete' id=post.id %}">DELETE</a>
+                  </div>
+                </div>
+                <h5>{{post.title}}<a href="#"> ____<i class="fa fa-bookmark" style="color: coral;"></i></a></h5>
+                <div class="post-footer d-flex align-items-center flex-column flex-sm-row"><a href="#" class="author d-flex align-items-center flex-wrap">
+                    <div class="avatar"><img src="{{post.author.profile_picture.url}}" alt="..." class="img-fluid"></div>
+                    <div class="title"><span>{{post.author}}</span></div></a>
+                  <div class="d-flex align-items-center flex-wrap">       
+                    <div class="date"><i class="icon-clock" style="color: brown;" ></i> {{post.timestamb|timesince}}</div>
+                    <div class="views"><i class="icon-eye" style="color:deeppink ;"></i> {{post.view_count}}</div>
+                    <div class="comments meta-last"><i class="icon-comment" style="color:mediumblue;" ></i>{{post.comments.count}}</div>
+                  </div>
+                </div>
+                <div class="post-body">
+                 {{post.content|safe}}
+                </div>
+                <div class="post-tags">
+                  {% for cat in category_count %}
+                  <a href="#" class="tag">#{{cat.category__title}}</a>
+                  {% endfor %}
+                </div>
+                <div class="posts-nav d-flex justify-content-between align-items-stretch flex-column flex-md-row">
+                  {% if post.previous_post %}
+                  <a href="{{post.previous_post.get_obsolute_url}}" class="prev-post text-left d-flex align-items-center">
+                  
+                    <div class="icon prev"><i class="fa fa-angle-left"></i></div>
+                    <div class="text"><strong class="text-primary">Previous Post </strong>
+                      <h6>{{post.title}}</h6>                 
+                    </div></a>
+                    {% endif %}
+                    {% if post.next_post %}
+                    <a href="{{post.next_post.get_obsolute_url}}" class="next-post text-right d-flex align-items-center justify-content-end">
+                    <div class="text"><strong class="text-primary">Next Post </strong>
+                      <h6>{{post.title}}</h6>
+                    </div>
+                    {% endif %}
+                    <div class="icon next"><i class="fa fa-angle-right"></i></div></a></div>
+                <div class="post-comments">
+                  <header>
+                    <h3 class="h6">Post Comments<span class="no-of-comments">({{post.comments.count}})</span></h3>
+                  </header>
+                  {% for comment in post.get_comments %}
+                  <div class="comment">
+                    <div class="comment-header d-flex justify-content-between">
+                      <div class="user d-flex align-items-center">
+                        {% if comment.user.author %}
+                        <div class="image"><img src="{{comment.user.author.profile_picture.url}}" alt="..." class="img-fluid rounded-circle"></div>
+                        {% else %}
+                        <div class="image"><img src="img/user.svg" alt="..." class="img-fluid rounded-circle"></div>
+                        {% endif %}
+                        <div class="title"><strong>{{comment.user.username}}</strong><span class="date">{{comment.timestamb|timesince}}</span></div>
+                      </div>
+                    </div>
+                    <div class="comment-body">
+                      <p>{{comment.content}}</p>
+                    </div>
+                  </div>
+                  {% endfor %}
+                 
+                </div>
+<!-- Add comment  -->
+                {% if request.user.is_authenticated %} 
+                <div class="add-comment">
+                  <header>
+                    <h3 class="h6">Leave a reply</h3>
+                  </header>
+                  <form action="" method="POST" class="commenting-form">
+                    {% csrf_token %}
+
+                    <div class="row">                     
+                      <div class="form-group col-md-12">
+                        {{form}}                       
+                      </div>
+
+                      <div class="form-group col-md-12">
+                        <button type="submit" class="btn btn-info">Submit Comment</button>
+                      </div>
+
+                    </div>
+                  </form>
+                </div>
+                {% else %}
+                <div class="form-group col-md-12">
+                  <a href="/accounts/login" class="btn btn-info">Login for comment !!</a>
+                </div>
+                
+                {% endif %}
+              </div>
+
+            </div>
+          </div>
+        </main>
+        <aside class="col-lg-4">
+         
+          <!-- Widget [Search Bar Widget]-->
+          <div class="widget search shadow">
+            <header>
+              <h3 class="h6 ">Search the blog</h3>
+            </header>
+            <form action="#" class="search-form">
+              <div class="form-group">
+                <input type="text" name="q" placeholder="What are you looking for?">
+                <button type="submit" class="submit"><i class="icon-search"></i></button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Widget [Latest Posts Widget]        -->
+          <div class="widget latest-posts shadow ">
+            <header>
+              <h3 class="h6">Latest Posts</h3>
+            </header>
+            {% for lat in latest %}
+              <div class="blog-posts">
+                <a href="{{lat.get_absolute_url}}">
+                <div class="item d-flex align-items-center">
+                  <div class="image"><img src="{{lat.thumbnails.url}}" alt="..." class="img-fluid"></div>
+                  <div class="title"><strong>{{lat.title}}</strong>
+                    <div class="d-flex align-items-center">
+                      <div class="views"><i class="icon-eye"></i> {{lat.view_count}}</div>
+                      <div class="comments"><i class="icon-comment"></i>{{lat.comment}}</div>
+                    </div>
+                  </div>
+                </div></a>
+                
+              
+              </div>
+              {% endfor %}
+          </div>
+          <!-- Widget [Categories Widget]-->
+          <div class="widget categories shadow ">
+            <header>
+              <h3 class="h6">Categories</h3>
+            </header>
+            {% for cat in category_count %}
+            <div class="item d-flex justify-content-between"><a href="#">{{cat.category__title}}</a><span>{{cat.category__title__count}}</span></div>
+           
+            {% endfor %}
+          </div>
+          <!-- Widget [Tags Cloud Widget]-->
+          <div class="widget tags shadow">       
+            <header>
+              <h3 class="h6">Tags</h3>
+            </header>
+            <ul class="list-inline">
+              {% for cat in category_count %}
+              <li class="list-inline-item"><a href="#" class="tag">#{{cat.category__title}}</a></li>
+              {% endfor %}
+             
+          </div>
+        </aside>
+      </div>
+    </div>
+ 
+  </body>
+{% endblock %}
